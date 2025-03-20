@@ -13,74 +13,79 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 
 router.post('/', authenticateUser, authorizeDoctor, async (req, res) => {
-  try {
-    console.log('POST /api/prescriptions hit!');
-
-
+    try {
+      console.log('POST /api/prescriptions hit!');
+  
       const { doctorId, patientId, careInstructions, medicines, consultationId } = req.body;
       const consultation = await Consultation.findById(consultationId)
           .populate('doctor')
           .populate('patient');
-      
-
-
+  
       if (!consultation) {
           return res.status(404).json({ message: 'Consultation not found' });
       }
-
-      const pdfPath = path.join(__dirname, '..', 'prescriptions', `prescription-${consultationId}.pdf`);
+  
+      const prescriptionsDir = path.join(__dirname, '..', 'prescriptions');
+  
+      // Ensure the /prescriptions directory exists
+      if (!fs.existsSync(prescriptionsDir)) {
+          fs.mkdirSync(prescriptionsDir, { recursive: true });
+      }
+  
+      const pdfPath = path.join(prescriptionsDir, `prescription-${consultationId}.pdf`);
       const doc = new PDFDocument();
       const writeStream = fs.createWriteStream(pdfPath);
-
+  
       doc.pipe(writeStream);
-
+  
       // Header with Blue Border
       doc.rect(0, 0, 0, 0).fill('#000080');
       doc.fillColor('black').fontSize(14).text(`Dr. ${consultation.doctor.name}`, 20, 10);
       doc.text(`Date: ${new Date().toLocaleDateString()}`, 450, 10);
       doc.fontSize(12).text(`Address: ${consultation.doctor?.email}`, 20, 25);
-
+  
       // Blue Line
       doc.rect(0, 50, 612, 4).fill('#000080');
-
+  
       // Care Instructions
       doc.fontSize(14).text('Care to be taken', 20, 70);
       doc.rect(20, 85, 572, 80).stroke();
       doc.text(careInstructions, 25, 90, { width: 560 });
-
+  
       // Medicines
       doc.fontSize(14).text('Medicine', 20, 180);
       doc.rect(20, 195, 572, 80).stroke();
       doc.text(medicines || 'None', 25, 200, { width: 560 });
-
+  
       // Bottom Blue Line
       doc.rect(0, 300, 612, 4).fill('#000080');
-
+  
       // Doctor's Name in Footer
       doc.fontSize(12).text(`Name of doctor: Dr. ${consultation.doctor.name}`, 350, 320);
-
+  
       doc.end();
-
+  
       writeStream.on('finish', async () => {
-          const prescription = new Prescription({
-              consultation: consultationId,
-              careInstructions,
-              medicines,
-              prescriptionPDF: pdfPath,
-          });
-
-          await prescription.save();
-          console.log('Prescription saved:', prescription);
-          res.status(201).json({
-            message: 'Prescription created successfully',
-            pdfPath: `/prescriptions/prescription-${consultationId}.pdf`,  
+        const prescription = new Prescription({
+          consultation: consultationId,
+          careInstructions,
+          medicines,
+          prescriptionPDF: pdfPath,
+        });
+  
+        await prescription.save();
+        console.log('Prescription saved:', prescription);
+        res.status(201).json({
+          message: 'Prescription created successfully',
+          pdfPath: `/prescriptions/prescription-${consultationId}.pdf`,
         });
       });
-
-  } catch (error) {
+  
+    } catch (error) {
+      console.error('Error creating prescription:', error);
       res.status(500).json({ message: error.message });
-  }
-});
+    }
+  });
 
 
 
