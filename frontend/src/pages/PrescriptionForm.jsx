@@ -44,12 +44,12 @@ const PrescriptionForm = () => {
         e.preventDefault();
     
         try {
-            const token = localStorage.getItem('token');  // Add this to include token
+            const token = localStorage.getItem('token');
             const response = await axios.put(`${backendUrl}/api/prescriptions/edit/${consultationId}`, {
                 careInstructions,
                 medicines
             }, {
-                headers: { Authorization: `Bearer ${token}` } // Include Authorization header
+                headers: { Authorization: `Bearer ${token}` } 
             });
     
             alert('Prescription edited successfully!');
@@ -62,7 +62,7 @@ const PrescriptionForm = () => {
 
     const handleResend = async () => {
         try {
-            const token = localStorage.getItem('token');  // Add token
+            const token = localStorage.getItem('token'); 
             const response = await axios.post(`${backendUrl}/api/prescriptions/send/${consultationId}`, {
                 email
             }, {

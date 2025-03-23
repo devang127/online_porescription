@@ -126,7 +126,7 @@ router.get('/:id', authenticateUser, async (req, res) => {
 
 router.get('/test-doctor', async (req, res) => {
   try {
-    const doctors = await Doctor.find({}); // ✅ Correct for listing doctors
+    const doctors = await Doctor.find({});
     res.json(doctors);
   } catch (error) {
     console.error(error);

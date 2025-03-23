@@ -27,7 +27,7 @@ router.post('/', authenticateUser, authorizeDoctor, async (req, res) => {
   
       const prescriptionsDir = path.join(__dirname, '..', 'prescriptions');
   
-      // Ensure the /prescriptions directory exists
+
       if (!fs.existsSync(prescriptionsDir)) {
           fs.mkdirSync(prescriptionsDir, { recursive: true });
       }
@@ -38,29 +38,29 @@ router.post('/', authenticateUser, authorizeDoctor, async (req, res) => {
   
       doc.pipe(writeStream);
   
-      // Header with Blue Border
+
       doc.rect(0, 0, 0, 0).fill('#000080');
       doc.fillColor('black').fontSize(14).text(`Dr. ${consultation.doctor.name}`, 20, 10);
       doc.text(`Date: ${new Date().toLocaleDateString()}`, 450, 10);
       doc.fontSize(12).text(`Address: ${consultation.doctor?.email}`, 20, 25);
   
-      // Blue Line
+
       doc.rect(0, 50, 612, 4).fill('#000080');
   
-      // Care Instructions
+
       doc.fontSize(14).text('Care to be taken', 20, 70);
       doc.rect(20, 85, 572, 80).stroke();
       doc.text(careInstructions, 25, 90, { width: 560 });
   
-      // Medicines
+
       doc.fontSize(14).text('Medicine', 20, 180);
       doc.rect(20, 195, 572, 80).stroke();
       doc.text(medicines || 'None', 25, 200, { width: 560 });
   
-      // Bottom Blue Line
+
       doc.rect(0, 300, 612, 4).fill('#000080');
   
-      // Doctor's Name in Footer
+
       doc.fontSize(12).text(`Name of doctor: Dr. ${consultation.doctor.name}`, 350, 320);
   
       doc.end();

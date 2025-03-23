@@ -9,7 +9,7 @@ const Navbar = () => {
     navigate('/patient/signin'); 
   };
 
-  const isLoggedIn = !!localStorage.getItem('token'); // Check if token exists
+  const isLoggedIn = !!localStorage.getItem('token'); 
 
   return (
 <nav className="h-16 w-full fixed top-0 left-0 bg-gradient-to-r from-blue-500 to-blue-800 text-white p-4 shadow-md z-50">

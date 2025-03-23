@@ -37,7 +37,7 @@ router.post('/', async (req, res) => {
 
 
 router.get('/doctor/:doctorId', async (req, res) => {
-  const doctorId = req.params.doctorId.trim();  // 🔥 Fix for unwanted spaces/newlines
+  const doctorId = req.params.doctorId.trim(); 
 
   try {
     const consultations = await Consultation.find({ doctor: doctorId });
@@ -131,7 +131,7 @@ router.get('/:doctorId', async (req, res) => {
 
   try {
       const consultations = await Consultation.find({ doctor: doctorId })
-          .populate('patient') // <-- Add this line to populate patient details
+          .populate('patient')
           .exec();
 
       if (!consultations) {
